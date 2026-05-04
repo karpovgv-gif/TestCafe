@@ -12,6 +12,13 @@ var cafeList = map[string][]string{
 	"tula":   []string{"Пир и мир", "Красиво есть не запретишь", "Поздний завтрак"},
 }
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
 func mainHandle(w http.ResponseWriter, req *http.Request) {
 	var err error
 
@@ -44,6 +51,7 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 	count = min(count, len(cafe))
 	answer := strings.Join(cafe[:count], ",")
 	io.WriteString(w, answer)
+
 }
 
 func main() {
