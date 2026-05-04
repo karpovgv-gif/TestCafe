@@ -51,7 +51,7 @@ func TestCafeWhenOk(t *testing.T) {
 	}
 }
 
-func TestCofeCount(t *testing.T) {
+func TestCafeCount(t *testing.T) {
 	handler := http.HandlerFunc(mainHandle)
 
 	requests := []struct {
