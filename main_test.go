@@ -61,7 +61,7 @@ func TestCafeCount(t *testing.T) {
 		{0, 0},
 		{1, 1},
 		{2, 2},
-		{100, len(cafeList["moscow"])},
+		{100, min(len(cafeList["moscow"]), 100)},
 	}
 	for _, v := range requests {
 		response := httptest.NewRecorder()
@@ -69,6 +69,8 @@ func TestCafeCount(t *testing.T) {
 		req := httptest.NewRequest("GET", str, nil)
 
 		handler.ServeHTTP(response, req)
+
+		require.Equal(t, http.StatusOK, response.Code)
 
 		body := response.Body.String()
 
@@ -82,7 +84,6 @@ func TestCafeCount(t *testing.T) {
 		}
 
 		assert.Equal(t, v.want, cafeCount)
-		require.Equal(t, http.StatusOK, response.Code)
 	}
 }
 
@@ -93,27 +94,33 @@ func TestCafeSearch(t *testing.T) {
 		search    string
 		wantCount int
 	}{
-		{"search=фасоль", 0},
-		{"search=кофе", 2},
-		{"search=вилка", 1},
+		{"фасоль", 0},
+		{"кофе", 2},
+		{"вилка", 1},
 	}
 
 	for _, v := range requests {
 		response := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", fmt.Sprintf("/cafe?city=moscow&%s", v.search), nil)
+		req := httptest.NewRequest("GET", fmt.Sprintf("/cafe?city=moscow&search=%s", v.search), nil)
 
 		handler.ServeHTTP(response, req)
+
+		require.Equal(t, http.StatusOK, response.Code)
+
 		body := response.Body.String()
 
-		parts := strings.Split(body, ",")
 		count := 0
-		for _, part := range parts {
-			if strings.TrimSpace(part) != "" {
-				count++
+
+		if body != "" {
+			parts := strings.Split(body, ",")
+
+			for _, part := range parts {
+				assert.Equal(t, true, strings.Contains(strings.ToLower(part), strings.ToLower(v.search)))
+
 			}
+			count = len(parts)
 		}
 
 		assert.Equal(t, v.wantCount, count)
-		require.Equal(t, http.StatusOK, response.Code)
 	}
 }
