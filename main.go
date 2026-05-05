@@ -44,6 +44,7 @@ func mainHandle(w http.ResponseWriter, req *http.Request) {
 	count = min(count, len(cafe))
 	answer := strings.Join(cafe[:count], ",")
 	io.WriteString(w, answer)
+
 }
 
 func main() {
